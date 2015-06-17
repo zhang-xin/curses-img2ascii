@@ -1,7 +1,8 @@
 from PIL import Image
 
+
 class Img2ascii:
-    chars = [' ', '.', '1', '+', '*', '#', '%', '&']
+    chars = [' ', '.', '1', '+', '*', '#', '%', 'M']
 
     def getchar(self, pi):
         for i in range(8):

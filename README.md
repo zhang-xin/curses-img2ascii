@@ -1,5 +1,7 @@
 # img2ascii
 
-###结构说明
-img2ascii.py 负责转换
-run.py 封装命令行工具
+###Use
+img2ascii.py: convert class
+run.py: curses interface to show ascii graph
+
+Tested on python 3

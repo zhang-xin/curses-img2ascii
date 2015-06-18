@@ -10,7 +10,8 @@ class Display:
         self._show_width = int(columns)
         self._show_height = int(rows)//5*4
         self.show_win = curses.newwin(self._show_height, self._show_width, 0, 0)
-        self.show_win.box(0, 0)
+        # why calling box will crash python on Mac?
+        # self.show_win.box(0, 0)
         self.show_win.refresh()
 
         self.cmd_line = curses.newwin(1, self._show_width, self._show_height, 0)

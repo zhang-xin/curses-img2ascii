@@ -15,8 +15,8 @@ class Display:
 
         self.cmd_line = curses.newwin(1, self._show_width, self._show_height, 0)
         self.cmd_line.bkgd(' ', curses.color_pair(8))
-        self.cmd_line.addstr('q for quit; o to input graph; +/- to resize graph\
-; r to clean; d to dump; arrow keys to move around')
+        self.cmd_line.addstr('q to quit; o to open graph; +/- to resize; c to \
+clean; d to dump; hjkl/arrow keys to move around; r to move back')
         self.cmd_line.refresh()
 
         self.cmd_win = curses.newwin(int(rows)-self._show_height-1,
@@ -35,13 +35,13 @@ class Display:
         self._ratio = 100
 
     def _update_pad(self, key=0):
-        if key == curses.KEY_UP and self._y > 0:
+        if key == 1 and self._y > 0:
             self._y -= 1
-        elif key == curses.KEY_DOWN and self._y < 1199:
+        elif key == 2 and self._y < 1199:
             self._y += 1
-        elif key == curses.KEY_LEFT and self._x > 0:
+        elif key == 3 and self._x > 0:
             self._x -= 1
-        elif key == curses.KEY_RIGHT and self._x < 1919:
+        elif key == 4 and self._x < 1919:
             self._x += 1
 
         self.pad.refresh(self._y, self._x, 1, 1, self._show_height-2,
@@ -62,6 +62,7 @@ class Display:
             self.pad.addstr(line)
             self.pad.addstr("\n")
         self._update_pad()
+        self.cmd_win.addstr("zoom to %d%%\n" % self._ratio)
 
     def _input_file(self):
         self.cmd_win.addstr('input image file name: ')
@@ -92,8 +93,11 @@ class Display:
                 break
             elif c == ord('o'):
                 self._input_file()
-            elif c == ord('r'):
+            elif c == ord('c'):
                 self._clear_pad()
+            elif c == ord('r'):
+                self._x = self._y = 0
+                self._update_pad()
             elif c == ord('+'):
                 if self._ratio < 10:
                     self._ratio += 1
@@ -106,14 +110,14 @@ class Display:
                 elif self._ratio > 10:
                     self._ratio -= 10
                 self._draw_ascii()
-            elif c == curses.KEY_UP:
-                self._update_pad(c)
-            elif c == curses.KEY_DOWN:
-                self._update_pad(c)
-            elif c == curses.KEY_LEFT:
-                self._update_pad(c)
-            elif c == curses.KEY_RIGHT:
-                self._update_pad(c)
+            elif c == curses.KEY_UP or c == ord('k'):
+                self._update_pad(1)
+            elif c == curses.KEY_DOWN or c == ord('j'):
+                self._update_pad(2)
+            elif c == curses.KEY_LEFT or c == ord('h'):
+                self._update_pad(3)
+            elif c == curses.KEY_RIGHT or c == ord('l'):
+                self._update_pad(4)
             elif c == ord('d'):
                 self._dump_file()
 

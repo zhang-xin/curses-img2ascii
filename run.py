@@ -73,6 +73,7 @@ clean; d to dump; hjkl/arrow keys to move around; r to move back')
         curses.noecho()
         try:
             self._graph = Img2ascii(self._file_name)
+            self._ratio = 100
         except Exception:
             self._graph = None
 
@@ -87,6 +88,23 @@ clean; d to dump; hjkl/arrow keys to move around; r to move back')
             self.cmd_win.addstr('dumped ascii file as ' + f.name + '\n')
             self._update_cmd()
 
+    def _update_size(self):
+        rows, columns = os.popen('stty size', 'r').read().split()
+        self._show_width = int(columns)
+        self._show_height = int(rows)//5*4
+
+        self.show_win.resize(self._show_height, self._show_width)
+        self.show_win.mvwin(0, 0)
+        self.show_win.refresh()
+        self.cmd_line.resize(1, self._show_width)
+        self.cmd_line.mvwin(self._show_height, 0)
+        self.cmd_line.refresh()
+        self.cmd_win.resize(int(rows)-self._show_height-1, self._show_width)
+        self.cmd_win.mvwin(self._show_height+1, 0)
+        self.cmd_win.refresh()
+
+        self._draw_ascii()
+
     def main_loop(self):
         while True:
             c = self.cmd_win.getch()
@@ -95,6 +113,7 @@ clean; d to dump; hjkl/arrow keys to move around; r to move back')
             elif c == ord('o'):
                 self._input_file()
             elif c == ord('c'):
+                self._graph = None
                 self._clear_pad()
             elif c == ord('r'):
                 self._x = self._y = 0
@@ -121,6 +140,8 @@ clean; d to dump; hjkl/arrow keys to move around; r to move back')
                 self._update_pad(4)
             elif c == ord('d'):
                 self._dump_file()
+            elif c == curses.KEY_RESIZE:
+                self._update_size()
 
 
 def init_settings():
